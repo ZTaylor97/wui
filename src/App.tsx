@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import "./index.css";
+
 import Home from "./pages/Home.tsx";
 import Log from "./pages/Log.tsx";
 import { Box, Tab, Grid } from "@mui/material";
@@ -14,13 +16,13 @@ function App() {
   };
 
   return (
-    <>
-      <Grid container>
+    <Grid container direction="column">
+      <Grid item>
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList onChange={handleChange} aria-label="NavTabs">
               <Tab label="Home" value="1" />
-              <Tab label="Item Two" value="2" />
+              <Tab label="Logging" value="2" />
             </TabList>
           </Box>
           <TabPanel value="1">
@@ -31,7 +33,7 @@ function App() {
           </TabPanel>
         </TabContext>
       </Grid>
-    </>
+    </Grid>
   );
 }
 
