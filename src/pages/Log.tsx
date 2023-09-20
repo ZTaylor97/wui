@@ -7,6 +7,9 @@ import {
   AlertTitle,
   Collapse,
   IconButton,
+  Stack,
+  Box,
+  Container,
 } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -132,57 +135,66 @@ function Log() {
           Submit
         </Button>
       </Grid>
-      <Grid item>
-        <TabContext value={tabValue}>
-          <TabList onChange={tabHandleChange}>
-            <Tab label="Item One" value="1" />
-            <Tab label="Item Two" value="2" />
-            <Tab label="Item Three" value="3" />
-          </TabList>
-          <TabPanel value="1">
-            <Plot
-              data={[
-                {
-                  x: [1, 2, 3],
-                  y: [2, 6, 3],
-                  type: "scatter",
-                  mode: "lines+markers",
-                  marker: { color: "red" },
-                },
-                { type: "bar", x: [1, 2, 3], y: [2, 5, 3] },
-              ]}
-              layout={{ width: 320, height: 240, title: "A Fancy Plot" }}
-            />
-          </TabPanel>
-          <TabPanel value="2">
-            <Plot
-              data={[
-                {
-                  x: [69, 420, 666],
-                  y: [2, 6, 3],
-                  type: "scatter",
-                  mode: "lines+markers",
-                  marker: { color: "blue" },
-                },
-              ]}
-              layout={{ width: 320, height: 240, title: "A Fancy Plot" }}
-            />
-          </TabPanel>
-          <TabPanel value="3">
-            <Plot
-              data={[
-                {
-                  x: [69, 420, 666],
-                  y: [2, 6, 3],
-                  type: "scatter",
-                  mode: "lines+markers",
-                  marker: { color: "green" },
-                },
-              ]}
-              layout={{ width: 320, height: 240, title: "A Fancy Plot" }}
-            />
-          </TabPanel>
-        </TabContext>
+      <Grid container direction="row" xs={12} justifyContent="center">
+        <Grid item xs={6} justifyContent="center">
+          <Container fixed>
+            <TabContext value={tabValue}>
+              <TabList onChange={tabHandleChange}>
+                <Tab label="Temperature" value="1" />
+                <Tab label="Item Two" value="2" />
+                <Tab label="Item Three" value="3" />
+              </TabList>
+              <TabPanel value="1">
+                <Plot
+                  data={[
+                    {
+                      x: aqData.map((x) => x.time),
+                      y: aqData.map((x) => x.temperature),
+                      type: "scatter",
+                      mode: "lines+markers",
+                      marker: { color: "red" },
+                    },
+                  ]}
+                  layout={{ width: 600, height: 400, title: "Temperature" }}
+                />
+              </TabPanel>
+              <TabPanel value="2">
+                <Plot
+                  data={[
+                    {
+                      x: [69, 420, 666],
+                      y: [2, 6, 3],
+                      type: "scatter",
+                      mode: "lines+markers",
+                      marker: { color: "blue" },
+                    },
+                  ]}
+                  layout={{ width: 600, height: 400, title: "A Fancy Plot" }}
+                />
+              </TabPanel>
+              <TabPanel value="3">
+                <Plot
+                  data={[
+                    {
+                      x: [69, 420, 666],
+                      y: [2, 6, 3],
+                      type: "scatter",
+                      mode: "lines+markers",
+                      marker: { color: "green" },
+                    },
+                  ]}
+                  layout={{ width: 600, height: 400, title: "A Fancy Plot" }}
+                />
+              </TabPanel>
+            </TabContext>
+          </Container>
+        </Grid>
+        <Grid item xs={6}>
+          <Stack>
+            <h1>Entry one</h1>
+            <h1>another one</h1>
+          </Stack>
+        </Grid>
       </Grid>
     </Grid>
   );
