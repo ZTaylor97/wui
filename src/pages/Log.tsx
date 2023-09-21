@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 import * as dayjs from "dayjs";
 import axios from "axios";
 
-const ip_address = "192.168.1.109";
+const ip_address = "10.88.23.146";
 
 function Log() {
   // Time form state
