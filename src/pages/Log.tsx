@@ -21,8 +21,6 @@ import { useEffect, useState } from "react";
 import * as dayjs from "dayjs";
 import axios from "axios";
 
-const ip_address = "10.88.23.146";
-
 function Log() {
   // Time form state
   const [startTimeValue, setStartTimeValue] = useState<dayjs.Dayjs | null>(
@@ -41,7 +39,9 @@ function Log() {
 
   // Load data on page load
   useEffect(() => {
-    fetchData();
+    if (!_TESTING_) {
+      fetchData();
+    }
   }, []);
 
   function tabHandleChange(event: React.SyntheticEvent, newValue: string) {
@@ -69,7 +69,7 @@ function Log() {
       let endString = endTimeValue.format("YYYY-MM-DD HH:mm:ss");
 
       axios
-        .post(`http://${ip_address}:3000/aq`, {
+        .post(`${_BACKEND_ADDRESS_}/aq`, {
           startTime: startString,
           endTime: endString,
         })
@@ -79,7 +79,7 @@ function Log() {
         });
 
       axios
-        .post(`http://${ip_address}:3000/imp`, {
+        .post(`${_BACKEND_ADDRESS_}/imp`, {
           startTime: startString,
           endTime: endString,
         })
@@ -135,14 +135,18 @@ function Log() {
           Submit
         </Button>
       </Grid>
-      <Grid container direction="row" xs={12} justifyContent="center">
+      <Grid container item direction="row" xs={12} justifyContent="center">
         <Grid item xs={6} justifyContent="center">
           <Container fixed>
             <TabContext value={tabValue}>
               <TabList onChange={tabHandleChange}>
                 <Tab label="Temperature" value="1" />
-                <Tab label="Item Two" value="2" />
-                <Tab label="Item Three" value="3" />
+                <Tab label="Humidity" value="2" />
+                <Tab label="Light" value="3" />
+                <Tab label="Pressure" value="4" />
+                <Tab label="Gas 1" value="5" />
+                <Tab label="Gas 2" value="6" />
+                <Tab label="Gas 3" value="7" />
               </TabList>
               <TabPanel value="1">
                 <Plot
@@ -162,28 +166,84 @@ function Log() {
                 <Plot
                   data={[
                     {
-                      x: [69, 420, 666],
-                      y: [2, 6, 3],
+                      x: aqData.map((x) => x.time),
+                      y: aqData.map((x) => x.humidity),
                       type: "scatter",
                       mode: "lines+markers",
                       marker: { color: "blue" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "A Fancy Plot" }}
+                  layout={{ width: 600, height: 400, title: "Humidity" }}
                 />
               </TabPanel>
               <TabPanel value="3">
                 <Plot
                   data={[
                     {
-                      x: [69, 420, 666],
-                      y: [2, 6, 3],
+                      x: aqData.map((x) => x.time),
+                      y: aqData.map((x) => x.light),
                       type: "scatter",
                       mode: "lines+markers",
                       marker: { color: "green" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "A Fancy Plot" }}
+                  layout={{ width: 600, height: 400, title: "Light" }}
+                />
+              </TabPanel>
+              <TabPanel value="4">
+                <Plot
+                  data={[
+                    {
+                      x: aqData.map((x) => x.time),
+                      y: aqData.map((x) => x.pressure),
+                      type: "scatter",
+                      mode: "lines+markers",
+                      marker: { color: "green" },
+                    },
+                  ]}
+                  layout={{ width: 600, height: 400, title: "Pressure" }}
+                />
+              </TabPanel>
+              <TabPanel value="5">
+                <Plot
+                  data={[
+                    {
+                      x: aqData.map((x) => x.time),
+                      y: aqData.map((x) => x.gas1),
+                      type: "scatter",
+                      mode: "lines+markers",
+                      marker: { color: "green" },
+                    },
+                  ]}
+                  layout={{ width: 600, height: 400, title: "Gas 1" }}
+                />
+              </TabPanel>
+              <TabPanel value="6">
+                <Plot
+                  data={[
+                    {
+                      x: aqData.map((x) => x.time),
+                      y: aqData.map((x) => x.gas2),
+                      type: "scatter",
+                      mode: "lines+markers",
+                      marker: { color: "green" },
+                    },
+                  ]}
+                  layout={{ width: 600, height: 400, title: "Gas 2" }}
+                />
+              </TabPanel>
+              <TabPanel value="7">
+                <Plot
+                  data={[
+                    {
+                      x: aqData.map((x) => x.time),
+                      y: aqData.map((x) => x.gas3),
+                      type: "scatter",
+                      mode: "lines+markers",
+                      marker: { color: "green" },
+                    },
+                  ]}
+                  layout={{ width: 600, height: 400, title: "Gas 3" }}
                 />
               </TabPanel>
             </TabContext>
@@ -191,8 +251,38 @@ function Log() {
         </Grid>
         <Grid item xs={6}>
           <Stack>
-            <h1>Entry one</h1>
-            <h1>another one</h1>
+            {impData.map((impValue) => {
+              switch (impValue.type) {
+                case "marker":
+                  return (
+                    <p>
+                      {impValue.time} - Marker {impValue.markerValue} detected.
+                      Drone position estimated to be: x={impValue.x}, y=
+                      {impValue.y}, z={impValue.z}.
+                    </p>
+                  );
+                case "valve":
+                  let valveState = "closed";
+                  if (impValue.open) {
+                    valveState = "open";
+                  }
+                  return (
+                    <p>
+                      {impValue.time} - Valve detected. Valve is {valveState}
+                    </p>
+                  );
+                case "gauge":
+                  return (
+                    <p>
+                      {impValue.time} - Gauge detected. Gauge reading is{" "}
+                      {impValue.gaugeReading}
+                      {impValue.gaugeUnits}
+                    </p>
+                  );
+                default:
+                  return <p>Error detected in log</p>;
+              }
+            })}
           </Stack>
         </Grid>
       </Grid>
