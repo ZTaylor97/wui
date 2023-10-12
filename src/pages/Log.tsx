@@ -144,9 +144,9 @@ function Log() {
                 <Tab label="Humidity" value="2" />
                 <Tab label="Light" value="3" />
                 <Tab label="Pressure" value="4" />
-                <Tab label="Gas 1" value="5" />
-                <Tab label="Gas 2" value="6" />
-                <Tab label="Gas 3" value="7" />
+                <Tab label="Gas: CO" value="5" />
+                <Tab label="Gas: NO2" value="6" />
+                <Tab label="Gas: NH3" value="7" />
               </TabList>
               <TabPanel value="1">
                 <Plot
@@ -159,7 +159,7 @@ function Log() {
                       marker: { color: "red" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Temperature" }}
+                  layout={{ width: 600, height: 400, title: "Temperature (Celsius)" }}
                 />
               </TabPanel>
               <TabPanel value="2">
@@ -173,7 +173,7 @@ function Log() {
                       marker: { color: "blue" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Humidity" }}
+                  layout={{ width: 600, height: 400, title: "Humidity (%)" }}
                 />
               </TabPanel>
               <TabPanel value="3">
@@ -187,7 +187,7 @@ function Log() {
                       marker: { color: "green" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Light" }}
+                  layout={{ width: 600, height: 400, title: "Light (lux)" }}
                 />
               </TabPanel>
               <TabPanel value="4">
@@ -201,7 +201,7 @@ function Log() {
                       marker: { color: "green" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Pressure" }}
+                  layout={{ width: 600, height: 400, title: "Pressure (bar)" }}
                 />
               </TabPanel>
               <TabPanel value="5">
@@ -209,13 +209,13 @@ function Log() {
                   data={[
                     {
                       x: aqData.map((x) => x.time),
-                      y: aqData.map((x) => x.gas1),
+                      y: aqData.map((x) => x.co),
                       type: "scatter",
                       mode: "lines+markers",
                       marker: { color: "green" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Gas 1" }}
+                  layout={{ width: 600, height: 400, title: "Carbon Monoxide (ppm)" }}
                 />
               </TabPanel>
               <TabPanel value="6">
@@ -223,13 +223,13 @@ function Log() {
                   data={[
                     {
                       x: aqData.map((x) => x.time),
-                      y: aqData.map((x) => x.gas2),
+                      y: aqData.map((x) => x.no2),
                       type: "scatter",
                       mode: "lines+markers",
                       marker: { color: "green" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Gas 2" }}
+                  layout={{ width: 600, height: 400, title: "Nitrous Oxide (ppm)" }}
                 />
               </TabPanel>
               <TabPanel value="7">
@@ -237,13 +237,13 @@ function Log() {
                   data={[
                     {
                       x: aqData.map((x) => x.time),
-                      y: aqData.map((x) => x.gas3),
+                      y: aqData.map((x) => x.nh3),
                       type: "scatter",
                       mode: "lines+markers",
                       marker: { color: "green" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Gas 3" }}
+                  layout={{ width: 600, height: 400, title: "Ammonia (ppm)" }}
                 />
               </TabPanel>
             </TabContext>

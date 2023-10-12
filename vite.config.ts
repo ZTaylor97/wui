@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
     define: {
         _BACKEND_ADDRESS_ : JSON.stringify("http://10.88.23.146:3000"),
-        _TESTING_ : true
+        _TESTING_ : false
     },
   plugins: [react()],
 })
