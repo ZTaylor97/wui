@@ -7,6 +7,7 @@ function Home() {
 
   if (!_TESTING_) {
     useEffect(() => {
+      
       const interval = setInterval(() => setTime(Date.now()), 500);
       return () => {
         clearInterval(interval);
