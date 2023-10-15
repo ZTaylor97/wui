@@ -65,9 +65,7 @@ function Log() {
 
   // Load data on page load
   useEffect(() => {
-    if (!_TESTING_) {
       fetchData();
-    }
   }, []);
 
   function tabHandleChange(event: React.SyntheticEvent, newValue: string) {
