@@ -255,7 +255,7 @@ function Log() {
               switch (impValue.type) {
                 case "marker":
                   return (
-                    <p>
+                    <p key={impValue.col_id}>
                       {impValue.time} - Marker {impValue.markerValue} detected.
                       Drone position estimated to be: x={impValue.x}, y=
                       {impValue.y}, z={impValue.z}.
@@ -267,20 +267,20 @@ function Log() {
                     valveState = "open";
                   }
                   return (
-                    <p>
+                    <p key={impValue.col_id}>
                       {impValue.time} - Valve detected. Valve is {valveState}
                     </p>
                   );
                 case "gauge":
                   return (
-                    <p>
+                    <p key={impValue.col_id}>
                       {impValue.time} - Gauge detected. Gauge reading is{" "}
                       {impValue.gaugeReading}
                       {impValue.gaugeUnits}
                     </p>
                   );
                 default:
-                  return <p>Error detected in log</p>;
+                  return <p key={impValue.col_id}>Error detected in log</p>;
               }
             })}
           </Stack>

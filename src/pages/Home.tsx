@@ -5,13 +5,17 @@ import axios from "axios";
 import SensorObject from "../SensorObject";
 
 export interface SensorData {
+  col_id: number;
   temperature: number;
   humidity: number;
   light: number;
+  pressure: number;
   co: number;
   no2: number;
   nh3: number;
 }
+
+const updateDelay = 200;
 
 function Home() {
   const [time, setTime] = useState(Date.now().toString());
@@ -20,6 +24,7 @@ function Home() {
     temperature: 0,
     humidity: 0,
     light: 0,
+    pressure: 0,
     co: 0,
     no2: 0,
     nh3: 0,
@@ -27,29 +32,39 @@ function Home() {
   const [objectData, setObjectData] = useState([]);
 
   function fetchData() {
-    // TODO:
-    axios.get(`${_BACKEND_ADDRESS_}/aq`).then((resp) => {
-      setSensorData(resp.data[0]);
-      console.log(resp.data[0]);
-    });
+    // TODO: make route for getting most recent sensor data in db
+    if(_TESTING_){
+      let mockSensorData: SensorData = {temperature: 25.0, humidity: 30.4, light: 200.4, pressure: 43.12, co:30, no2:40, nh3:70};
 
-    axios.get(`${_BACKEND_ADDRESS_}/imp`).then((resp) => {
-      setObjectData(resp.data);
+      setSensorData(mockSensorData);
+
+      let mockObjectData = [{col_id: 1,type: 'valve', isOpen: true}, {col_id: 2, type: 'gauge', gaugeReading: 40, gaugeUnits: "bar"}, {col_id: 3, type: 'marker', markerValue: 137281, x:3, y:4, z:5}];
+      setObjectData(mockObjectData);
+    } else {
+    axios.get(`${_BACKEND_ADDRESS_}/aqlive`).then((resp) => {
+      if (resp.data.length > 0){
+        setSensorData(resp.data[0]);
+        console.log(resp.data[0]);
+      }
+      
     });
+    // TODO: modify backend so that up to 3 most recent values in last second are shown
+    axios.get(`${_BACKEND_ADDRESS_}/implive`).then((resp) => {
+      setObjectData(resp.data);
+    }); 
+  }
   }
 
-  if (!_TESTING_) {
     useEffect(() => {
       const interval = setInterval(() => {
         fetchData();
         setTime(Date.now().toString())
-      }, 300);
+      }, updateDelay);
       
       return () => {
         clearInterval(interval);
       };
     }, []);
-  }
 
   return (
     <Grid container direction="row" width="100%" alignItems="center">
@@ -63,7 +78,7 @@ function Home() {
           switch (impValue.type) {
             case "marker":
               return (
-                <p>
+                <p key={impValue.col_id}>
                   Marker {impValue.markerValue} detected.
                   Drone position estimated to be: x={impValue.x}, y=
                   {impValue.y}, z={impValue.z}.
@@ -75,27 +90,24 @@ function Home() {
                 valveState = "open";
               }
               return (
-                <p>
-                  {impValue.time} - Valve detected. Valve is {valveState}
-                </p>
+                <p key={impValue.col_id}>Valve detected. Valve is {valveState}</p>
               );
             case "gauge":
               return (
-                <p>
-                  {impValue.time} - Gauge detected. Gauge reading is{" "}
-                  {impValue.gaugeReading}
+                <p key={impValue.col_id}>
+                  Gauge detected. Gauge reading is {impValue.gaugeReading}
                   {impValue.gaugeUnits}
                 </p>
               );
             default:
-              return <p>Error detected in log</p>;
+              return <p key={Date.now()}>Error detected in log</p>;
           }
         })}
       </Grid>
-      <Grid item md={6} xs={6}>
-        <SensorObject>Temperature: {sensorData.temperature}</SensorObject>
-        <SensorObject>Humidity: {sensorData.humidity}</SensorObject>
-        <SensorObject>Humidity: {sensorData.humidity}</SensorObject>
+      <Grid item xs={6}>
+        <SensorObject>Temperature: {sensorData.temperature}C</SensorObject>
+        <SensorObject>Humidity: {sensorData.humidity}%</SensorObject>
+        <SensorObject>Pressure: {sensorData.pressure}bar</SensorObject>
         <SensorObject>Light: {sensorData.light}lux</SensorObject>
         <SensorObject>Carbon Monoxide: {sensorData.co}ppm</SensorObject>
         <SensorObject>Nitrous Oxide: {sensorData.no2}ppm</SensorObject>
