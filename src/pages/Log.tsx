@@ -21,6 +21,33 @@ import { useEffect, useState } from "react";
 import * as dayjs from "dayjs";
 import axios from "axios";
 
+  // Data state
+  export interface aqData {
+    col_id: number;
+    time: string;
+    temperature: number;
+    humidity: number;
+    pressure: number;
+    light: number;
+    co: number;
+    nh3: number;
+    no2: number;
+  };
+
+  //TODO: rename
+  export interface impData {
+    col_id: number;
+    time: string;
+    type: string;
+    isOpen: boolean;
+    gaugeReading: number;
+    gaugeUnits: string;
+    markerCode: number;
+    x: number;
+    y: number;
+    z: number;
+  };
+
 function Log() {
   // Time form state
   const [startTimeValue, setStartTimeValue] = useState<dayjs.Dayjs | null>(
@@ -33,9 +60,8 @@ function Log() {
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertText, setAlertText] = useState("Error");
 
-  // Data state
-  const [aqData, setAqData] = useState([]);
-  const [impData, setImpData] = useState([]);
+  const [aqData, setAqData] = useState<Array<aqData>>([]);
+  const [impData, setImpData] = useState<Array<impData>>([]);
 
   // Load data on page load
   useEffect(() => {
@@ -68,6 +94,9 @@ function Log() {
       let startString = startTimeValue.format("YYYY-MM-DD HH:mm:ss");
       let endString = endTimeValue.format("YYYY-MM-DD HH:mm:ss");
 
+      if (_TESTING_){
+
+      } else{
       axios
         .post(`${_BACKEND_ADDRESS_}/aq`, {
           startTime: startString,
@@ -87,6 +116,7 @@ function Log() {
           setImpData(resp.data);
           console.log(resp.data);
         });
+      }
     }
   }
 
@@ -152,21 +182,29 @@ function Log() {
                 <Plot
                   data={[
                     {
-                      x: aqData.map((x) => x.time),
+                      x: aqData.map((x) =>
+                        dayjs(x.time).format("HH:mm:ss").toString()
+                      ),
                       y: aqData.map((x) => x.temperature),
                       type: "scatter",
                       mode: "lines+markers",
                       marker: { color: "red" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Temperature (Celsius)" }}
+                  layout={{
+                    width: 600,
+                    height: 400,
+                    title: "Temperature (Celsius)",
+                  }}
                 />
               </TabPanel>
               <TabPanel value="2">
                 <Plot
                   data={[
                     {
-                      x: aqData.map((x) => x.time),
+                      x: aqData.map((x) =>
+                        dayjs(x.time).format("HH:mm:ss").toString()
+                      ),
                       y: aqData.map((x) => x.humidity),
                       type: "scatter",
                       mode: "lines+markers",
@@ -180,7 +218,9 @@ function Log() {
                 <Plot
                   data={[
                     {
-                      x: aqData.map((x) => x.time),
+                      x: aqData.map((x) =>
+                        dayjs(x.time).format("HH:mm:ss").toString()
+                      ),
                       y: aqData.map((x) => x.light),
                       type: "scatter",
                       mode: "lines+markers",
@@ -194,7 +234,9 @@ function Log() {
                 <Plot
                   data={[
                     {
-                      x: aqData.map((x) => x.time),
+                      x: aqData.map((x) =>
+                        dayjs(x.time).format("HH:mm:ss").toString()
+                      ),
                       y: aqData.map((x) => x.pressure),
                       type: "scatter",
                       mode: "lines+markers",
@@ -208,35 +250,49 @@ function Log() {
                 <Plot
                   data={[
                     {
-                      x: aqData.map((x) => x.time),
+                      x: aqData.map((x) =>
+                        dayjs(x.time).format("HH:mm:ss").toString()
+                      ),
                       y: aqData.map((x) => x.co),
                       type: "scatter",
                       mode: "lines+markers",
                       marker: { color: "green" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Carbon Monoxide (ppm)" }}
+                  layout={{
+                    width: 600,
+                    height: 400,
+                    title: "Carbon Monoxide (ppm)",
+                  }}
                 />
               </TabPanel>
               <TabPanel value="6">
                 <Plot
                   data={[
                     {
-                      x: aqData.map((x) => x.time),
+                      x: aqData.map((x) =>
+                        dayjs(x.time).format("HH:mm:ss").toString()
+                      ),
                       y: aqData.map((x) => x.no2),
                       type: "scatter",
                       mode: "lines+markers",
                       marker: { color: "green" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Nitrous Oxide (ppm)" }}
+                  layout={{
+                    width: 600,
+                    height: 400,
+                    title: "Nitrous Oxide (ppm)",
+                  }}
                 />
               </TabPanel>
               <TabPanel value="7">
                 <Plot
                   data={[
                     {
-                      x: aqData.map((x) => x.time),
+                      x: aqData.map((x) =>
+                        dayjs(x.time).format("HH:mm:ss").toString()
+                      ),
                       y: aqData.map((x) => x.nh3),
                       type: "scatter",
                       mode: "lines+markers",
@@ -256,14 +312,14 @@ function Log() {
                 case "marker":
                   return (
                     <p key={impValue.col_id}>
-                      {impValue.time} - Marker {impValue.markerValue} detected.
+                      {impValue.time} - Marker {impValue.markerCode} detected.
                       Drone position estimated to be: x={impValue.x}, y=
                       {impValue.y}, z={impValue.z}.
                     </p>
                   );
                 case "valve":
                   let valveState = "closed";
-                  if (impValue.open) {
+                  if (impValue.isOpen) {
                     valveState = "open";
                   }
                   return (

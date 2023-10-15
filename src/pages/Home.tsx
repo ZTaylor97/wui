@@ -3,24 +3,16 @@ import { Grid, Tab } from "@mui/material";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import SensorObject from "../SensorObject";
-
-export interface SensorData {
-  col_id: number;
-  temperature: number;
-  humidity: number;
-  light: number;
-  pressure: number;
-  co: number;
-  no2: number;
-  nh3: number;
-}
+import { aqData, impData } from "./Log";
 
 const updateDelay = 200;
 
 function Home() {
   const [time, setTime] = useState(Date.now().toString());
 
-  const [sensorData, setSensorData] = useState<SensorData>({
+  const [sensorData, setSensorData] = useState<aqData>({
+    col_id: 0,
+    time: "",
     temperature: 0,
     humidity: 0,
     light: 0,
@@ -29,16 +21,63 @@ function Home() {
     no2: 0,
     nh3: 0,
   });
-  const [objectData, setObjectData] = useState([]);
+  const [objectData, setObjectData] = useState<Array<impData>>([]);
 
   function fetchData() {
     // TODO: make route for getting most recent sensor data in db
     if(_TESTING_){
-      let mockSensorData: SensorData = {temperature: 25.0, humidity: 30.4, light: 200.4, pressure: 43.12, co:30, no2:40, nh3:70};
+      let mockSensorData: aqData = {
+        col_id: 69,
+        time: "2023-12-10 12:32:12",
+        temperature: 25.0,
+        humidity: 30.4,
+        light: 200.4,
+        pressure: 43.12,
+        co: 30,
+        no2: 40,
+        nh3: 70,
+      };
 
       setSensorData(mockSensorData);
 
-      let mockObjectData = [{col_id: 1,type: 'valve', isOpen: true}, {col_id: 2, type: 'gauge', gaugeReading: 40, gaugeUnits: "bar"}, {col_id: 3, type: 'marker', markerValue: 137281, x:3, y:4, z:5}];
+      let mockObjectData: Array<impData> = [
+        {
+          col_id: 1,
+          time: "2023-12-10 12:32:12",
+          type: "valve",
+          isOpen: true,
+          gaugeReading: 0,
+          gaugeUnits: "bar",
+          markerCode: 0,
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+        {
+          col_id: 2,
+          time: "2023-12-10 12:32:12",
+          type: "gauge",
+          isOpen: false,
+          gaugeReading: 30.0,
+          gaugeUnits: "bar",
+          markerCode: 0,
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+        {
+          col_id: 3,
+          time: "2023-12-10 12:32:12",
+          type: "marker",
+          isOpen: true,
+          gaugeReading: 0,
+          gaugeUnits: "bar",
+          markerCode: 172534,
+          x: 1,
+          y: 2,
+          z: 3,
+        },
+      ];
       setObjectData(mockObjectData);
     } else {
     axios.get(`${_BACKEND_ADDRESS_}/aqlive`).then((resp) => {
@@ -74,19 +113,19 @@ function Home() {
           width={600}
           height={400}
         />
-        {objectData.map((impValue: any) => {
+        {objectData.map((impValue: impData) => {
           switch (impValue.type) {
             case "marker":
               return (
                 <p key={impValue.col_id}>
-                  Marker {impValue.markerValue} detected.
+                  Marker {impValue.markerCode} detected.
                   Drone position estimated to be: x={impValue.x}, y=
                   {impValue.y}, z={impValue.z}.
                 </p>
               );
             case "valve":
               let valveState = "closed";
-              if (impValue.open) {
+              if (impValue.isOpen) {
                 valveState = "open";
               }
               return (
