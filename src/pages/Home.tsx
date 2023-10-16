@@ -1,11 +1,25 @@
-import { Grid, Tab } from "@mui/material";
+import { Button, Grid, Tab } from "@mui/material";
 
 import { useState, useEffect } from "react";
 import axios from "axios";
 import SensorObject from "../SensorObject";
 import { aqData, impData } from "./Log";
 
-const updateDelay = 200;
+const updateDelay = 300;
+
+function cycleLCD() {
+  axios.get(`${_BACKEND_ADDRESS_}:5001/cyclegui`).then(() => {
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+function activateDrill() {
+  axios.get(`${_BACKEND_ADDRESS_}:5001/tube`).then(() => {
+  }).catch((error) => {
+    console.log(error);
+  })
+}
 
 function Home() {
   const [time, setTime] = useState(Date.now().toString());
@@ -44,53 +58,60 @@ function Home() {
         {
           col_id: 1,
           time: "2023-12-10 12:32:12",
-          type: "valve",
-          isOpen: true,
-          gaugeReading: 0,
-          gaugeUnits: "bar",
+          col_type: "valve",
+          valve_open: true,
+          gauge_reading: 0,
+          gauge_units: "bar",
           markerCode: 0,
-          x: 0,
-          y: 0,
-          z: 0,
+          coord_x: 0,
+          coord_y: 0,
+          coord_z: 0,
         },
         {
           col_id: 2,
           time: "2023-12-10 12:32:12",
-          type: "gauge",
-          isOpen: false,
-          gaugeReading: 30.0,
-          gaugeUnits: "bar",
+          col_type: "gauge",
+          valve_open: false,
+          gauge_reading: 30.0,
+          gauge_units: "bar",
           markerCode: 0,
-          x: 0,
-          y: 0,
-          z: 0,
+          coord_x: 0,
+          coord_y: 0,
+          coord_z: 0,
         },
         {
           col_id: 3,
           time: "2023-12-10 12:32:12",
-          type: "marker",
-          isOpen: true,
-          gaugeReading: 0,
-          gaugeUnits: "bar",
+          col_type: "marker",
+          valve_open: true,
+          gauge_reading: 0,
+          gauge_units: "bar",
           markerCode: 172534,
-          x: 1,
-          y: 2,
-          z: 3,
+          coord_x: 1,
+          coord_y: 2,
+          coord_z: 3,
         },
       ];
       setObjectData(mockObjectData);
     } else {
-    axios.get(`${_BACKEND_ADDRESS_}/aqlive`).then((resp) => {
+    axios.get(`${_BACKEND_ADDRESS_}:3000/aqlive`).then((resp) => {
       if (resp.data.length > 0){
         setSensorData(resp.data[0]);
         console.log(resp.data[0]);
       }
       
+    }).catch((error) => {
+    console.log(error)
     });
     // TODO: modify backend so that up to 3 most recent values in last second are shown
-    axios.get(`${_BACKEND_ADDRESS_}/implive`).then((resp) => {
-      setObjectData(resp.data);
-    }); 
+    axios
+      .get(`${_BACKEND_ADDRESS_}:3000/implive`)
+      .then((resp) => {
+        setObjectData(resp.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      }); 
   }
   }
 
@@ -109,37 +130,43 @@ function Home() {
     <Grid container direction="row" width="100%" alignItems="center">
       <Grid item xs={6}>
         <img
-          src={`${_BACKEND_ADDRESS_}/image.jpg?${time}`}
+          src={`${_BACKEND_ADDRESS_}:3000/image.jpg?${time}`}
           width={600}
           height={400}
         />
         {objectData.map((impValue: impData) => {
-          switch (impValue.type) {
+          switch (impValue.col_type) {
             case "marker":
               return (
-                <p key={impValue.col_id}>
-                  Marker {impValue.markerCode} detected.
-                  Drone position estimated to be: x={impValue.x}, y=
-                  {impValue.y}, z={impValue.z}.
+                <p style={{ color: "black" }} key={impValue.col_id}>
+                  Marker {impValue.markerCode} detected. Drone position
+                  estimated to be: x={impValue.coord_x}, y=
+                  {impValue.coord_y}, z={impValue.coord_z}.
                 </p>
               );
             case "valve":
               let valveState = "closed";
-              if (impValue.isOpen) {
+              if (impValue.valve_open) {
                 valveState = "open";
               }
               return (
-                <p key={impValue.col_id}>Valve detected. Valve is {valveState}</p>
+                <p style={{ color: "black" }} key={impValue.col_id}>
+                  Valve detected. Valve is {valveState}
+                </p>
               );
             case "gauge":
               return (
-                <p key={impValue.col_id}>
-                  Gauge detected. Gauge reading is {impValue.gaugeReading}
-                  {impValue.gaugeUnits}
+                <p style={{ color: "black" }} key={impValue.col_id}>
+                  Gauge detected. Gauge reading is {impValue.gauge_reading}
+                  {impValue.gauge_units}
                 </p>
               );
             default:
-              return <p key={Date.now()}>Error detected in log</p>;
+              return (
+                <p style={{ color: "red" }} key={Date.now()}>
+                  Error detected in object data
+                </p>
+              );
           }
         })}
       </Grid>
@@ -151,6 +178,20 @@ function Home() {
         <SensorObject>Carbon Monoxide: {sensorData.co}ppm</SensorObject>
         <SensorObject>Nitrous Oxide: {sensorData.no2}ppm</SensorObject>
         <SensorObject>Ammonia: {sensorData.nh3}ppm</SensorObject>
+        <Button
+          style={{ background: "green" }}
+          variant="contained"
+          onClick={cycleLCD}
+        >
+          Cycle LCD
+        </Button>
+        <Button
+          style={{ background: "red" }}
+          variant="contained"
+          onClick={activateDrill}
+        >
+          Emergency activate sampling tube
+        </Button>
       </Grid>
     </Grid>
   );

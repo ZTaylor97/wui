@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { DesktopTimePicker } from "@mui/x-date-pickers/DesktopTimePicker";
 import CloseIcon from "@mui/icons-material/Close";
 
 import Plot from "react-plotly.js";
@@ -38,14 +38,14 @@ import axios from "axios";
   export interface impData {
     col_id: number;
     time: string;
-    type: string;
-    isOpen: boolean;
-    gaugeReading: number;
-    gaugeUnits: string;
+    col_type: string;
+    valve_open: boolean;
+    gauge_reading: number;
+    gauge_units: string;
     markerCode: number;
-    x: number;
-    y: number;
-    z: number;
+    coord_x: number;
+    coord_y: number;
+    coord_z: number;
   };
 
 function Log() {
@@ -74,10 +74,9 @@ function Log() {
 
   function fetchData() {
     if (
-      startTimeValue?.isAfter(dayjs().add(30, "second")) ||
-      endTimeValue?.isAfter(dayjs().add(30, "second"))
+      startTimeValue?.isAfter(dayjs().add(30, "second"))
     ) {
-      setAlertText("Please enter times that aren't in the future");
+      setAlertText("Please enter a start time that isn't in the future");
       setAlertOpen(true);
       return;
     }
@@ -96,7 +95,7 @@ function Log() {
 
       } else{
       axios
-        .post(`${_BACKEND_ADDRESS_}/aq`, {
+        .post(`${_BACKEND_ADDRESS_}:3000/aq`, {
           startTime: startString,
           endTime: endString,
         })
@@ -106,7 +105,7 @@ function Log() {
         });
 
       axios
-        .post(`${_BACKEND_ADDRESS_}/imp`, {
+        .post(`${_BACKEND_ADDRESS_}:3000/imp`, {
           startTime: startString,
           endTime: endString,
         })
@@ -122,12 +121,13 @@ function Log() {
     <Grid container direction="column" alignItems="center">
       <Grid item>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <TimePicker
+          <DesktopTimePicker
             label="Start Time"
             value={startTimeValue}
             onChange={(newValue) => setStartTimeValue(newValue)}
+            
           />
-          <TimePicker
+          <DesktopTimePicker
             label="End Time"
             value={endTimeValue}
             onChange={(newValue) => setEndTimeValue(newValue)}
@@ -306,18 +306,18 @@ function Log() {
         <Grid item xs={6}>
           <Stack>
             {impData.map((impValue) => {
-              switch (impValue.type) {
+              switch (impValue.col_type) {
                 case "marker":
                   return (
                     <p key={impValue.col_id}>
                       {impValue.time} - Marker {impValue.markerCode} detected.
-                      Drone position estimated to be: x={impValue.x}, y=
-                      {impValue.y}, z={impValue.z}.
+                      Drone position estimated to be: x={impValue.coord_x}, y=
+                      {impValue.coord_y}, z={impValue.coord_z}.
                     </p>
                   );
                 case "valve":
                   let valveState = "closed";
-                  if (impValue.isOpen) {
+                  if (impValue.valve_open) {
                     valveState = "open";
                   }
                   return (
@@ -329,8 +329,8 @@ function Log() {
                   return (
                     <p key={impValue.col_id}>
                       {impValue.time} - Gauge detected. Gauge reading is{" "}
-                      {impValue.gaugeReading}
-                      {impValue.gaugeUnits}
+                      {impValue.gauge_reading}
+                      {impValue.gauge_units}
                     </p>
                   );
                 default:
