@@ -190,7 +190,7 @@ function Home() {
           variant="contained"
           onClick={activateDrill}
         >
-          Emergency activate sampling tube
+          Emergency sampling
         </Button>
       </Grid>
     </Grid>

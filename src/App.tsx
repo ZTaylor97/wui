@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import "./index.css";
 
+import qut from "./assets/qut.jpg";
+
 import Home from "./pages/Home.tsx";
 import Log from "./pages/Log.tsx";
 import { Box, Tab, Grid } from "@mui/material";
@@ -32,9 +34,9 @@ function App() {
             <Log />
           </TabPanel>
         </TabContext>
+        <footer><img src={qut} width={16} height={16}></img>{" QUTPayloadTAQ Group 2: 2023"}</footer>
       </Grid>
     </Grid>
   );
 }
-
 export default App;
