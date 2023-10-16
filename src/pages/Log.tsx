@@ -101,7 +101,6 @@ function Log() {
         })
         .then((resp) => {
           setAqData(resp.data);
-          console.log(resp.data);
         });
 
       axios
@@ -111,7 +110,6 @@ function Log() {
         })
         .then((resp) => {
           setImpData(resp.data);
-          console.log(resp.data);
         });
       }
     }
@@ -125,7 +123,6 @@ function Log() {
             label="Start Time"
             value={startTimeValue}
             onChange={(newValue) => setStartTimeValue(newValue)}
-            
           />
           <DesktopTimePicker
             label="End Time"
@@ -193,6 +190,7 @@ function Log() {
                     width: 600,
                     height: 400,
                     title: "Temperature (Celsius)",
+                    yaxis: { title: "Temperature (C)" },
                   }}
                 />
               </TabPanel>
@@ -209,7 +207,12 @@ function Log() {
                       marker: { color: "blue" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Humidity (%)" }}
+                  layout={{
+                    width: 600,
+                    height: 400,
+                    title: "Humidity",
+                    yaxis: { title: "Humidity (%)" },
+                  }}
                 />
               </TabPanel>
               <TabPanel value="3">
@@ -225,7 +228,12 @@ function Log() {
                       marker: { color: "green" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Light (lux)" }}
+                  layout={{
+                    width: 600,
+                    height: 400,
+                    title: "Light",
+                    yaxis: { title: "Light (lux)" },
+                  }}
                 />
               </TabPanel>
               <TabPanel value="4">
@@ -241,7 +249,12 @@ function Log() {
                       marker: { color: "green" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Pressure (bar)" }}
+                  layout={{
+                    width: 600,
+                    height: 400,
+                    title: "Pressure",
+                    yaxis: { title: "Pressure (hPa)" },
+                  }}
                 />
               </TabPanel>
               <TabPanel value="5">
@@ -260,7 +273,8 @@ function Log() {
                   layout={{
                     width: 600,
                     height: 400,
-                    title: "Carbon Monoxide (ppm)",
+                    title: "Carbon Monoxide",
+                    yaxis: { title: "CO (ppm)" },
                   }}
                 />
               </TabPanel>
@@ -280,7 +294,8 @@ function Log() {
                   layout={{
                     width: 600,
                     height: 400,
-                    title: "Nitrous Oxide (ppm)",
+                    title: "Nitrous Oxide",
+                    yaxis: { title: "NO2 (ppm)" },
                   }}
                 />
               </TabPanel>
@@ -297,7 +312,12 @@ function Log() {
                       marker: { color: "green" },
                     },
                   ]}
-                  layout={{ width: 600, height: 400, title: "Ammonia (ppm)" }}
+                  layout={{
+                    width: 600,
+                    height: 400,
+                    title: "Ammonia",
+                    yaxis: { title: "NH3 (ppm)" },
+                  }}
                 />
               </TabPanel>
             </TabContext>

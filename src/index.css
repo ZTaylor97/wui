@@ -73,14 +73,10 @@ button:focus-visible {
 
 footer {
   position: fixed;
-  background-color: gray;
+  background-color: #4b6471;
   bottom: 0;
   left: 0;
   right: 0;
   padding: 8px;
   text-align: center;
-}
-
-footer img {
-  text-align: end;
 }

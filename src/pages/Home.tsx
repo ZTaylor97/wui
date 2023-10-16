@@ -9,6 +9,7 @@ const updateDelay = 300;
 
 function cycleLCD() {
   axios.get(`${_BACKEND_ADDRESS_}:5001/cyclegui`).then(() => {
+    
   }).catch((error) => {
     console.log(error);
   });
@@ -97,7 +98,6 @@ function Home() {
     axios.get(`${_BACKEND_ADDRESS_}:3000/aqlive`).then((resp) => {
       if (resp.data.length > 0){
         setSensorData(resp.data[0]);
-        console.log(resp.data[0]);
       }
       
     }).catch((error) => {
@@ -171,13 +171,13 @@ function Home() {
         })}
       </Grid>
       <Grid item xs={6}>
-        <SensorObject>Temperature: {sensorData.temperature}C</SensorObject>
-        <SensorObject>Humidity: {sensorData.humidity}%</SensorObject>
-        <SensorObject>Pressure: {sensorData.pressure}bar</SensorObject>
-        <SensorObject>Light: {sensorData.light}lux</SensorObject>
-        <SensorObject>Carbon Monoxide: {sensorData.co}ppm</SensorObject>
-        <SensorObject>Nitrous Oxide: {sensorData.no2}ppm</SensorObject>
-        <SensorObject>Ammonia: {sensorData.nh3}ppm</SensorObject>
+        <SensorObject>Temperature: {Number(sensorData.temperature).toFixed(2)}C</SensorObject>
+        <SensorObject>Humidity: {Number(sensorData.humidity).toFixed(2)}%</SensorObject>
+        <SensorObject>Pressure: {Number(sensorData.pressure).toFixed(2)}hPa</SensorObject>
+        <SensorObject>Light: {Number(sensorData.light).toFixed(2)}lux</SensorObject>
+        <SensorObject>Carbon Monoxide: {Number(sensorData.co).toFixed(2)}ppm</SensorObject>
+        <SensorObject>Nitrous Oxide: {Number(sensorData.no2).toFixed(2)}ppm</SensorObject>
+        <SensorObject>Ammonia: {Number(sensorData.nh3).toFixed(2)}ppm</SensorObject>
         <Button
           style={{ background: "green" }}
           variant="contained"
